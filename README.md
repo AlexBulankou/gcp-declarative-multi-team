@@ -1,0 +1,1 @@
+# gcp-declarative-multi-team
