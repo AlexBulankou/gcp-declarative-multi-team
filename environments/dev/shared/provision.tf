@@ -113,7 +113,7 @@ resource "google_service_account_iam_binding" "admin-account-iam" {
   role               = "roles/iam.workloadIdentityUser"
 
   members = [
-    "serviceAccount:${google_project.root_project.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
+    "serviceAccount:${var.project}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
   ]
 
   depends_on = [
