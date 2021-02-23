@@ -14,6 +14,13 @@ provider "google-beta" {
 }
 
 
+resource "google_project_service" "iamservice" {
+  project = var.project
+  service = "iam.googleapis.com"
+
+  disable_dependent_services = true
+}
+
 resource "google_project_service" "crmservice" {
   project = var.project
   service = "cloudresourcemanager.googleapis.com"
@@ -28,7 +35,8 @@ resource "google_project_service" "containerservice" {
   disable_dependent_services = true
 
   depends_on = [
-    google_project_service.crmservice
+    google_project_service.crmservice,
+    google_project_service.iamservice
   ]
 }
 
