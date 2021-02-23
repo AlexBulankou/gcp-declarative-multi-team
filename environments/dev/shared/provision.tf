@@ -1,3 +1,7 @@
+variable "project" {
+  type = string
+}
+
 locals {
   region = "us-central1"
   zone   = "us-central1-b"
@@ -6,32 +10,40 @@ locals {
 provider "google-beta" {
   region = local.region
   zone   = local.zone
-  project = "${var.project}"
+  project = var.project
 }
 
 
+resource "google_project_service" "iamservice" {
+  project = var.project
+  service = "iam.googleapis.com"
+
+  disable_dependent_services = true
+}
+
 resource "google_project_service" "crmservice" {
-  project = "${var.project}"
+  project = var.project
   service = "cloudresourcemanager.googleapis.com"
 
   disable_dependent_services = true
 }
 
 resource "google_project_service" "containerservice" {
-  project = "${var.project}"
+  project = var.project
   service = "container.googleapis.com"
 
   disable_dependent_services = true
 
   depends_on = [
-    google_project_service.crmservice
+    google_project_service.crmservice,
+    google_project_service.iamservice
   ]
 }
 
 resource "google_container_cluster" "primary" {
   provider = google-beta
   name      = "cluster-1"
-  project   = "${var.project}"
+  project = var.project
   location  = local.zone
 
   # We can't create a cluster with no node pool defined, but we want to only use
@@ -66,7 +78,7 @@ resource "google_container_cluster" "primary" {
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
   name       = "primary-node-pool"
-  project    = "${var.project}"
+  project = var.project
   cluster    = google_container_cluster.primary.name
   location   = local.zone
   node_count = 3
@@ -87,12 +99,12 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 
 resource "google_service_account" "cnrmsa" {
   account_id   = "cnrmsa"
-  project = "${var.project}"
+  project = var.project
   display_name = "IAM service account used by Config Connector"
 }
 
 resource "google_project_iam_binding" "project" {
-  project = "${var.project}"
+  project = var.project
   role    = "roles/owner"
 
   members = [
@@ -109,7 +121,7 @@ resource "google_service_account_iam_binding" "admin-account-iam" {
   role               = "roles/iam.workloadIdentityUser"
 
   members = [
-    "serviceAccount:${google_project.root_project.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
+    "serviceAccount:${var.project}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
   ]
 
   depends_on = [
