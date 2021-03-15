@@ -138,9 +138,9 @@ module "config_sync" {
   cluster_endpoint = google_container_cluster.primary.endpoint
   secret_type      = "none"
 
-  sync_repo        = "git@github.com:GoogleCloudPlatform/csp-config-management.git"
+  sync_repo        = "git@github.com:AlexBulankou/gcp-declarative-multi-team.git"
   sync_branch      = "1.0.0"
-  policy_dir       = "foo-corp"
+  policy_dir       = "environments/prod/csproot"
 
   depends_on = [
     google_container_cluster.primary
