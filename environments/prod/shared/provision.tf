@@ -129,9 +129,8 @@ resource "google_service_account_iam_binding" "admin-account-iam" {
   ]
 }
 
-/*
 module "config_sync" {
-  source           = "terraform-google-modules/kubernetes-engine/google//modules/config-sync"
+  source           = "terraform-google-modules/kubernetes-engine/google/modules/config-sync"
 
   project_id       = var.project
   cluster_name     = google_container_cluster.primary.name
@@ -147,4 +146,3 @@ module "config_sync" {
     google_container_cluster.primary
   ]
 }
-*/
