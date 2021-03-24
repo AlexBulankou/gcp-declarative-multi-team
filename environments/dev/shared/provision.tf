@@ -142,8 +142,4 @@ module "config_sync" {
   sync_repo        = "git@github.com:AlexBulankou/gcp-declarative-multi-team.git"
   sync_branch      = "1.0.0"
   policy_dir       = "environments/dev/csproot"
-
-  depends_on = [
-    google_container_cluster.primary
-  ]
 }
