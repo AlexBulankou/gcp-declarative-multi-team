@@ -59,7 +59,7 @@ steps:
         echo "*************** TERRAFOM PLAN ******************"
         echo "******* At environment: ${env} ********"
         echo "*************************************************"
-        terraform plan -refresh=false || exit 1
+        terraform plan || exit 1
         cd ../../../
       done
 # [END tf-plan]
