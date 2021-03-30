@@ -81,7 +81,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   project = var.project
   cluster    = google_container_cluster.primary.name
   location   = local.zone
-  node_count = 3
+  node_count = 5
 
   node_config {
     preemptible  = true
@@ -138,8 +138,8 @@ module "config_sync" {
   location         = local.zone
   cluster_endpoint = google_container_cluster.primary.endpoint
   secret_type      = "none"
-
   sync_repo        = "git@github.com:AlexBulankou/gcp-declarative-multi-team.git"
-  sync_branch      = "1.0.0"
+  sync_branch      = "main"
   policy_dir       = "environments/dev/csproot"
+  create_ssh_key   = false
 }
