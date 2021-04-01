@@ -140,6 +140,6 @@ module "config_sync" {
   secret_type      = "none"
   sync_repo        = "git@github.com:AlexBulankou/gcp-declarative-multi-team.git"
   sync_branch      = "main"
-  policy_dir       = "environments/dev/csproot"
+  policy_dir       = "csproot-dev"
   create_ssh_key   = false
 }

@@ -139,7 +139,7 @@ module "config_sync" {
   secret_type      = "none"
 
   sync_repo        = "git@github.com:AlexBulankou/gcp-declarative-multi-team.git"
-  sync_branch      = "1.0.0"
-  policy_dir       = "environments/prod/csproot"
+  sync_branch      = "main"
+  policy_dir       = "csproot-prod"
   
 }
