@@ -138,7 +138,7 @@ module "config_sync" {
   location         = local.zone
   cluster_endpoint = google_container_cluster.primary.endpoint
   secret_type      = "none"
-  sync_repo        = "git@github.com:AlexBulankou/gcp-declarative-multi-team.git"
+  sync_repo        = "https://github.com/AlexBulankou/gcp-declarative-multi-team.git"
   sync_branch      = "main"
   policy_dir       = "csproot-dev"
   create_ssh_key   = false
