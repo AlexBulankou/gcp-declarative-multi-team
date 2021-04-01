@@ -129,7 +129,6 @@ resource "google_service_account_iam_binding" "admin-account-iam" {
   ]
 }
 
-/*
 module "config_sync" {
   source           = "terraform-google-modules/kubernetes-engine/google//modules/config-sync"
 
@@ -139,12 +138,8 @@ module "config_sync" {
   cluster_endpoint = google_container_cluster.primary.endpoint
   secret_type      = "none"
 
-  sync_repo        = "git@github.com:GoogleCloudPlatform/csp-config-management.git"
-  sync_branch      = "1.0.0"
-  policy_dir       = "foo-corp"
-
-  depends_on = [
-    google_container_cluster.primary
-  ]
+  sync_repo        = "git@github.com:AlexBulankou/gcp-declarative-multi-team.git"
+  sync_branch      = "main"
+  policy_dir       = "csproot-prod"
+  
 }
-*/

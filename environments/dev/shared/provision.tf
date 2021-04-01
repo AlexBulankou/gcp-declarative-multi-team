@@ -81,7 +81,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   project = var.project
   cluster    = google_container_cluster.primary.name
   location   = local.zone
-  node_count = 3
+  node_count = 5
 
   node_config {
     preemptible  = true
@@ -128,4 +128,18 @@ resource "google_service_account_iam_binding" "admin-account-iam" {
     google_container_cluster.primary,
     google_service_account.cnrmsa
   ]
+}
+
+module "config_sync" {
+  source           = "terraform-google-modules/kubernetes-engine/google//modules/config-sync"
+
+  project_id       = var.project
+  cluster_name     = google_container_cluster.primary.name
+  location         = local.zone
+  cluster_endpoint = google_container_cluster.primary.endpoint
+  secret_type      = "none"
+  sync_repo        = "https://github.com/AlexBulankou/gcp-declarative-multi-team.git"
+  sync_branch      = "main"
+  policy_dir       = "csproot-dev"
+  create_ssh_key   = false
 }
