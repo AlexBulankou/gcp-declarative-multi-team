@@ -3,10 +3,6 @@ It will show how to configure multiple environments (dev, prod) with a dedicated
 
 Repeat the following steps for both `dev` and `prod` projects:
 
-# folder_id: 52733342542
-# billing_account: 019970-D6BDB5-6AF850
-# project: alexbu-20210402-dev
-
 ```bash
 gcloud auth login
 gcloud projects create [PROJECT_ID] --name=[PROJECT_ID] --folder=[FOLDER]
