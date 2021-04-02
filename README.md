@@ -1,8 +1,11 @@
 # TF and KCC Blueprint for multi-team organization setup
 It will show how to configure multiple environments (dev, prod) with a dedicated cluster for each environment and then a namespace per team in each of the clusters.
 
+Repeat the following steps for both `dev` and `prod` projects:
 
-Start with first project that is created manually:
+# folder_id: 52733342542
+# billing_account: 019970-D6BDB5-6AF850
+# project: alexbu-20210402-dev
 
 ```bash
 gcloud auth login
@@ -35,18 +38,18 @@ Enable Object Versioning to keep the history of your deployments:
 gsutil versioning set on gs://${PROJECT_ID}-tfstate
 ```
 
-Configure both dev and prod environments' TF state to this bucket. Here you can also configure a different bucket for different environment:
+Configure both dev and prod environments' TF state to this bucket. Substitute dev or prod in the command below
 
 ```bash
-sed -i "" s/PROJECT_ID/$PROJECT_ID/g environments/*/shared/terraform.tfvars
-sed -i "" s/PROJECT_ID/$PROJECT_ID/g environments/*/shared/backend.tf
+sed -i "" s/PROJECT_ID/$PROJECT_ID/g environments/[dev|prod]/shared/terraform.tfvars
+sed -i "" s/PROJECT_ID/$PROJECT_ID/g environments/[dev|prod]/shared/backend.tf
 ```
 
 to switch back:
 
 ```bash
-sed -i "" s/$PROJECT_ID/PROJECT_ID/g environments/*/shared/terraform.tfvars
-sed -i "" s/$PROJECT_ID/PROJECT_ID/g environments/*/shared/backend.tf
+sed -i "" s/$PROJECT_ID/PROJECT_ID/g environments/[dev|prod]/shared/terraform.tfvars
+sed -i "" s/$PROJECT_ID/PROJECT_ID/g environments/[dev|prod]/shared/backend.tf
 ```
 
 Grant permissions to Cloud Build service account:
@@ -60,7 +63,7 @@ Grant permissions to Cloud Build service account:
 2. Grant required permissions:
     ```bash
     gcloud projects add-iam-policy-binding $PROJECT_ID \
-    --member serviceAccount:$CLOUDBUILD_SA --role roles/editor
+    --member serviceAccount:$CLOUDBUILD_SA --role roles/owner
     ```
 
 
