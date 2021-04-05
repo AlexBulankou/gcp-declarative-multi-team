@@ -62,6 +62,4 @@ Grant permissions to Cloud Build service account:
     --member serviceAccount:$CLOUDBUILD_SA --role roles/owner
     ```
 
-
-# test1
-# test2
+3. Follow the [instructions here](https://cloud.google.com/solutions/managing-infrastructure-as-code#directly_connecting_cloud_build_to_your_github_repository) too connect Cloud Build to your GH repository.
