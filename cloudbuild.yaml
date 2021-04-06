@@ -74,6 +74,16 @@ steps:
   args: 
   - '-c'
   - | 
-      cd environments/prod/shared      
-      terraform apply -auto-approve
+      for dir in environments/*/shared
+      do 
+        cd ${dir}   
+        env=${dir%*/}
+        env=${env#*/}  
+        echo ""
+        echo "*************** TERRAFOM APPLY ******************"
+        echo "******* At environment: ${env} ********"
+        echo "*************************************************"
+        terraform apply -auto-approve || exit 1
+        cd ../../../
+      done
 # [END tf-apply]      
