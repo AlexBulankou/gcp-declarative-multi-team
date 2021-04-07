@@ -80,7 +80,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   project = var.project
   cluster    = google_container_cluster.primary.name
   location   = local.zone
-  node_count = 3
+  node_count = 5
 
   node_config {
     preemptible  = true
