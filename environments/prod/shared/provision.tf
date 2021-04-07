@@ -102,14 +102,10 @@ resource "google_service_account" "cnrmsa" {
   display_name = "IAM service account used by Config Connector"
 }
 
-resource "google_project_iam_binding" "project" {
+resource "google_project_iam_member" "project" {
   project = var.project
   role    = "roles/owner"
-
-  members = [
-    "serviceAccount:${google_service_account.cnrmsa.email}",
-  ]
-
+  member = "serviceAccount:${google_service_account.cnrmsa.email}"
   depends_on = [
     google_service_account.cnrmsa
   ]
