@@ -1,8 +1,10 @@
 # GitOps with CloudBuild, Terraform, Config Connector and Config Sync
 
-This project is an example of configuring multiple environments (dev and prod) with a dedicated GKE cluster for each of the environments. GKE cluster has Config Sync and Config Connector add-ons that enable using GitOps and provisioning GCP resources as well as native K8s resources provisioning, by submitting yaml configs under environments/[environment]/csproot/namespaces/[team-name], e.g. `environments/dev/csproot/namespaces/service-a/`.
+This project is an example of configuring multiple environments (dev and prod) with a dedicated GKE cluster for each of the environments. GKE cluster has Config Sync and Config Connector add-ons that enable using GitOps and provisioning GCP resources as well as native K8s resources, by submitting yaml configs under environments/[environment]/csproot/namespaces/[team-name], e.g. `environments/dev/csproot/namespaces/service-a/`.
 
 ## Installation (platform admin flow)
+
+As a platform admin, you will configure the following environment for multiple teams.
 
 1. Create the project that will contain CloudBuild service and GCS bucket.
 
@@ -52,9 +54,11 @@ This project is an example of configuring multiple environments (dev and prod) w
     ```bash
     sed -i "" s/PROJECT_ID/$DEV_PROJECT_ID/g environments/dev/shared/terraform.tfvars
     sed -i "" s/PROJECT_ID/$DEV_PROJECT_ID/g environments/dev/shared/backend.tf
+    sed -i "" s/PROJECT_ID/$DEV_PROJECT_ID/g environments/dev/csproot/cluster/configconnector.yaml
 
     sed -i "" s/PROJECT_ID/$PROD_PROJECT_ID/g environments/prod/shared/terraform.tfvars
     sed -i "" s/PROJECT_ID/$PROD_PROJECT_ID/g environments/prod/shared/backend.tf
+    sed -i "" s/PROJECT_ID/$PROD_PROJECT_ID/g environments/prod/csproot/cluster/configconnector.yaml
     ```
 
 1. Grant permissions to Cloud Build service account:
@@ -89,14 +93,16 @@ This project is an example of configuring multiple environments (dev and prod) w
 
 ## App Developer Deployment Flow
 
-1. Set the projects that you're working with:
+As app developer you will use Config Connector and Config Sync to manager your infrastructure from your K8s cluster.
+
+1. Identify the projects for dev and test environments.
 
     ```bash
     DEV_PROJECT_ID=[DEV_PROJECT_ID]
     PROD_PROJECT_ID=[PROD_PROJECT_ID]
     ```
 
-2. Validate and prepare the chart using `helm` for both dev and prod environments:
+2. Prepare the expanded configuration using Helm:
 
     ```bash
     helm lint ./templates/wp-chart/ --set google.projectId=$DEV_PROJECT_ID --set google.namespace=service-a
@@ -107,6 +113,11 @@ This project is an example of configuring multiple environments (dev and prod) w
     helm template ./templates/wp-chart/ --set google.projectId=$PROD_PROJECT_ID --set google.namespace=service-a \
         > ./environments/prod/csproot/namespaces/service-a/wp.yaml
     ```
-3. Submit the changes to git repo. They will be synchronized by Config sync and applied for both dev and prod environment.
+3. Submit the expanded configuration to git repo. They will be synchronized by Config sync and applied for both dev and prod environment.
 
 4. Validate that Wordpress instances were created in your dev and prod projects.
+
+    ```bash
+    kubectl get service wordpress-external -n=service-a
+    ping [external-ip]
+    ```
