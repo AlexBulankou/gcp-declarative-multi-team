@@ -147,7 +147,7 @@ spec:
   bindings:
     - role: roles/iam.workloadIdentityUser
       members:
-        - serviceAccount:alexbu-20210402-dev.svc.id.goog[default/sql-wp-ksa-wi]
+        - serviceAccount:alexbu-20210402-dev.svc.id.goog[service-a/sql-wp-ksa-wi]
 ---
 # Source: wordpress-gcp/templates/gcp-sql-policy-member.yaml
 apiVersion: iam.cnrm.cloud.google.com/v1beta1
