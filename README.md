@@ -96,9 +96,14 @@ This project is an example of configuring multiple environments (dev and prod) w
     PROD_PROJECT_ID=[PROD_PROJECT_ID]
     ```
 
-2. Validate and deploy the chart using helm:
+2. Validate and prepare the chart using `helm` for both dev and prod environments:
 
     ```bash
     helm lint ./templates/wp-chart/ --set google.projectId=$DEV_PROJECT_ID
-    helm template ./templates/wp-chart/ --set google.projectId=$DEV_PROJECT_ID > ./environments/dev/csproot/namespaces/service-a/wp.yaml
+    helm template ./templates/wp-chart/ --set google.projectId=$DEV_PROJECT_ID \
+        > ./environments/dev/csproot/namespaces/service-a/wp.yaml
+
+    helm lint ./templates/wp-chart/ --set google.projectId=$PROD_PROJECT_ID
+    helm template ./templates/wp-chart/ --set google.projectId=$PROD_PROJECT_ID \
+        > ./environments/prod/csproot/namespaces/service-a/wp.yaml
     ```
