@@ -99,11 +99,14 @@ This project is an example of configuring multiple environments (dev and prod) w
 2. Validate and prepare the chart using `helm` for both dev and prod environments:
 
     ```bash
-    helm lint ./templates/wp-chart/ --set google.projectId=$DEV_PROJECT_ID
-    helm template ./templates/wp-chart/ --set google.projectId=$DEV_PROJECT_ID \
+    helm lint ./templates/wp-chart/ --set google.projectId=$DEV_PROJECT_ID --set google.namespace=service-a
+    helm template ./templates/wp-chart/ --set google.projectId=$DEV_PROJECT_ID --set google.namespace=service-a \
         > ./environments/dev/csproot/namespaces/service-a/wp.yaml
 
-    helm lint ./templates/wp-chart/ --set google.projectId=$PROD_PROJECT_ID
-    helm template ./templates/wp-chart/ --set google.projectId=$PROD_PROJECT_ID \
+    helm lint ./templates/wp-chart/ --set google.projectId=$PROD_PROJECT_ID --set google.namespace=service-a
+    helm template ./templates/wp-chart/ --set google.projectId=$PROD_PROJECT_ID --set google.namespace=service-a \
         > ./environments/prod/csproot/namespaces/service-a/wp.yaml
     ```
+3. Submit the changes to git repo. They will be synchronized by Config sync and applied for both dev and prod environment.
+
+4. Validate that Wordpress instances were created in your dev and prod projects.

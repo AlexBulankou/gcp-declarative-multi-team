@@ -10,4 +10,4 @@ spec:
   bindings:
     - role: roles/iam.workloadIdentityUser
       members:
-        - serviceAccount:{{ required "projectId is required!" .Values.google.projectId }}.svc.id.goog[{{ required "Namespace is requried!" .Release.Namespace }}/sql-wp-ksa-wi]
+        - serviceAccount:{{ required "projectId is required!" .Values.google.projectId }}.svc.id.goog[{{ required "Namespace is required!" .Values.google.namespace }}/sql-wp-ksa-wi]

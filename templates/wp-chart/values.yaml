@@ -4,6 +4,7 @@
 
 google:
   projectId:
+  namespace:
   region: us-central1
 
 database:
