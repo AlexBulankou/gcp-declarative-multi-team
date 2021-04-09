@@ -2,7 +2,7 @@
 
 This project is an example of configuring multiple environments (dev and prod) with a dedicated GKE cluster for each of the environments. GKE cluster has Config Sync and Config Connector add-ons that enable using GitOps and provisioning GCP resources as well as native K8s resources provisioning, by submitting yaml configs under environments/[environment]/csproot/namespaces/[team-name], e.g. `environments/dev/csproot/namespaces/service-a/`.
 
-## Installation
+## Installation (platform admin flow)
 
 1. Create the project that will contain CloudBuild service and GCS bucket.
 
@@ -85,3 +85,20 @@ This project is an example of configuring multiple environments (dev and prod) w
     ```
 
 1. Follow the [instructions here](https://cloud.google.com/solutions/managing-infrastructure-as-code#directly_connecting_cloud_build_to_your_github_repository) too connect Cloud Build to your GH repository.
+
+
+## App Developer Deployment Flow
+
+1. Set the projects that you're working with:
+
+    ```bash
+    DEV_PROJECT_ID=[DEV_PROJECT_ID]
+    PROD_PROJECT_ID=[PROD_PROJECT_ID]
+    ```
+
+2. Validate and deploy the chart using helm:
+
+    ```bash
+    helm lint ./templates/wp-chart/ --set google.projectId=$DEV_PROJECT_ID
+    helm template ./templates/wp-chart/ --set google.projectId=$DEV_PROJECT_ID > ./environments/dev/csproot/namespaces/service-a/wp.yaml
+    ```
