@@ -80,7 +80,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   project = var.project
   cluster    = google_container_cluster.primary.name
   location   = local.zone
-  node_count = 3
+  node_count = 5
 
   node_config {
     preemptible  = true
@@ -102,14 +102,10 @@ resource "google_service_account" "cnrmsa" {
   display_name = "IAM service account used by Config Connector"
 }
 
-resource "google_project_iam_binding" "project" {
+resource "google_project_iam_member" "project" {
   project = var.project
   role    = "roles/owner"
-
-  members = [
-    "serviceAccount:${google_service_account.cnrmsa.email}",
-  ]
-
+  member = "serviceAccount:${google_service_account.cnrmsa.email}"
   depends_on = [
     google_service_account.cnrmsa
   ]
