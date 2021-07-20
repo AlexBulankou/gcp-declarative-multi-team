@@ -55,10 +55,14 @@ As a platform admin, you will configure the following environment for multiple t
     sed -i "" s/PROJECT_ID/$DEV_PROJECT_ID/g environments/dev/shared/terraform.tfvars
     sed -i "" s/PROJECT_ID/$DEV_PROJECT_ID/g environments/dev/shared/backend.tf
     sed -i "" s/PROJECT_ID/$DEV_PROJECT_ID/g environments/dev/csproot/cluster/configconnector.yaml
+    sed -i "" s/PROJECT_ID/$DEV_PROJECT_ID/g environments/dev/csproot/namespaces/service-a/namespace.yaml
+    sed -i "" s/PROJECT_ID/$DEV_PROJECT_ID/g environments/dev/csproot/namespaces/service-a/wp.yaml
 
     sed -i "" s/PROJECT_ID/$PROD_PROJECT_ID/g environments/prod/shared/terraform.tfvars
     sed -i "" s/PROJECT_ID/$PROD_PROJECT_ID/g environments/prod/shared/backend.tf
     sed -i "" s/PROJECT_ID/$PROD_PROJECT_ID/g environments/prod/csproot/cluster/configconnector.yaml
+    sed -i "" s/PROJECT_ID/$PROD_PROJECT_ID/g environments/prod/csproot/namespaces/service-a/namespace.yaml
+    sed -i "" s/PROJECT_ID/$PROD_PROJECT_ID/g environments/prod/csproot/namespaces/service-a/wp.yaml
     ```
 
 1. Grant permissions to Cloud Build service account:
