@@ -2,6 +2,18 @@ variable "project" {
   type = string
 }
 
+variable "sync_repo" {
+  type = string
+}
+
+variable "sync_branch" {
+  type = string
+}
+
+variable "policy_dir" {
+  type = string
+}
+
 locals {
   region = "us-central1"
   zone   = "us-central1-b"
@@ -12,7 +24,6 @@ provider "google-beta" {
   zone   = local.zone
   project = var.project
 }
-
 
 resource "google_project_service" "iamservice" {
   project = var.project
@@ -28,6 +39,7 @@ resource "google_project_service" "crmservice" {
   disable_dependent_services = true
 }
 
+
 resource "google_project_service" "containerservice" {
   project = var.project
   service = "container.googleapis.com"
@@ -37,6 +49,28 @@ resource "google_project_service" "containerservice" {
   depends_on = [
     google_project_service.crmservice,
     google_project_service.iamservice
+  ]
+}
+
+resource "google_project_service" "gkehubservice" {
+  project = var.project
+  service = "gkehub.googleapis.com"
+
+  disable_dependent_services = true
+
+  depends_on = [
+    google_project_service.containerservice
+  ]
+}
+
+resource "google_project_service" "acmservice" {
+  project = var.project
+  service = "anthosconfigmanagement.googleapis.com"
+
+  disable_dependent_services = true
+
+  depends_on = [
+    google_project_service.containerservice
   ]
 }
 
@@ -72,7 +106,8 @@ resource "google_container_cluster" "primary" {
 }
 
   depends_on = [
-    google_project_service.containerservice
+    google_project_service.containerservice,
+    google_project_service.gkehubservice
   ]
 }
 
@@ -81,7 +116,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   project = var.project
   cluster    = google_container_cluster.primary.name
   location   = local.zone
-  node_count = 5
+  node_count = 7
 
   node_config {
     preemptible  = true
@@ -126,16 +161,46 @@ resource "google_service_account_iam_binding" "admin-account-iam" {
   ]
 }
 
-module "config_sync" {
-  source           = "terraform-google-modules/kubernetes-engine/google//modules/config-sync"
+resource "google_gke_hub_membership" "membership" {
+  membership_id = "hub-membership"
+  endpoint {
+    gke_cluster {
+      resource_link = "//container.googleapis.com/${google_container_cluster.primary.id}"
+    }
+  }
+  depends_on = [
+    google_project_service.gkehubservice
+  ]
+  provider = google-beta
+}
 
-  project_id       = var.project
-  cluster_name     = google_container_cluster.primary.name
-  location         = local.zone
-  cluster_endpoint = google_container_cluster.primary.endpoint
-  secret_type      = "none"
-  sync_repo        = "https://github.com/AlexBulankou/gcp-declarative-multi-team.git"
-  sync_branch      = "main"
-  policy_dir       = "environments/dev/csproot"
-  create_ssh_key   = false
+resource "google_gke_hub_feature" "acm_feature" {
+  name = "configmanagement"
+  location = "global"
+  depends_on = [
+    google_project_service.gkehubservice,
+    google_project_service.acmservice
+  ]
+  provider = google-beta
+}
+
+resource "google_gke_hub_feature_membership" "acm_feature_member" {
+  location = "global"
+  feature = google_gke_hub_feature.acm_feature.name
+  membership = google_gke_hub_membership.membership.membership_id
+  configmanagement {
+    version = "1.6.2"
+    config_sync {
+      git {
+        sync_repo = var.sync_repo
+        sync_branch = var.sync_branch
+        policy_dir = var.policy_dir
+        secret_type = "none"
+      }
+    }
+  }
+  depends_on = [
+    google_project_service.gkehubservice
+  ]
+  provider = google-beta
 }
