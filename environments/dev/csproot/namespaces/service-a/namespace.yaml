@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: service-a
   annotations:
-    cnrm.cloud.google.com/project-id: "PROJECT_ID"
+    cnrm.cloud.google.com/project-id: "alexbu-test-20210720-dev"

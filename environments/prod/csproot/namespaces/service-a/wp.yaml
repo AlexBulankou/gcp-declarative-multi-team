@@ -5,7 +5,7 @@ kind: ServiceAccount
 metadata:
   name: sql-wp-ksa-wi
   annotations:
-    iam.gke.io/gcp-service-account: sql-wp-sa@PROJECT_ID.iam.gserviceaccount.com
+    iam.gke.io/gcp-service-account: sql-wp-sa@alexbu-test-20210720-prod.iam.gserviceaccount.com
 ---
 # Source: wordpress-gcp/templates/k8s-sql-db-credentials.yaml
 apiVersion: v1
@@ -13,7 +13,7 @@ kind: Secret
 metadata:
   name: wordpress-cloudsql-db-credentials
 stringData:
-  projectId: PROJECT_ID
+  projectId: alexbu-test-20210720-prod
   username: wordpress
   password: change-me
   connectionName: us-central1:wp-db
@@ -147,7 +147,7 @@ spec:
   bindings:
     - role: roles/iam.workloadIdentityUser
       members:
-        - serviceAccount:PROJECT_ID.svc.id.goog[service-a/sql-wp-ksa-wi]
+        - serviceAccount:alexbu-test-20210720-prod.svc.id.goog[service-a/sql-wp-ksa-wi]
 ---
 # Source: wordpress-gcp/templates/gcp-sql-policy-member.yaml
 apiVersion: iam.cnrm.cloud.google.com/v1beta1
@@ -155,12 +155,12 @@ kind: IAMPolicyMember
 metadata:
   name: sql-wp-sa-project-policymember
 spec:
-  member: serviceAccount:sql-wp-sa@PROJECT_ID.iam.gserviceaccount.com
+  member: serviceAccount:sql-wp-sa@alexbu-test-20210720-prod.iam.gserviceaccount.com
   role: roles/cloudsql.client
   resourceRef:
     kind: Project
     apiVersion: resourcemanager.cnrm.cloud.google.com/v1beta1
-    external: PROJECT_ID
+    external: alexbu-test-20210720-prod
 ---
 # Source: wordpress-gcp/templates/gcp-sql-service-account.yaml
 apiVersion: iam.cnrm.cloud.google.com/v1beta1

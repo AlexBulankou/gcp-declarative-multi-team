@@ -2,6 +2,18 @@ variable "project" {
   type = string
 }
 
+variable "sync_repo" {
+  type = string
+}
+
+variable "sync_branch" {
+  type = string
+}
+
+variable "policy_dir" {
+  type = string
+}
+
 locals {
   region = "us-central1"
   zone   = "us-central1-b"
@@ -27,6 +39,7 @@ resource "google_project_service" "crmservice" {
   disable_dependent_services = true
 }
 
+
 resource "google_project_service" "containerservice" {
   project = var.project
   service = "container.googleapis.com"
@@ -36,6 +49,28 @@ resource "google_project_service" "containerservice" {
   depends_on = [
     google_project_service.crmservice,
     google_project_service.iamservice
+  ]
+}
+
+resource "google_project_service" "gkehubservice" {
+  project = var.project
+  service = "gkehub.googleapis.com"
+
+  disable_dependent_services = true
+
+  depends_on = [
+    google_project_service.containerservice
+  ]
+}
+
+resource "google_project_service" "acmservice" {
+  project = var.project
+  service = "anthosconfigmanagement.googleapis.com"
+
+  disable_dependent_services = true
+
+  depends_on = [
+    google_project_service.containerservice
   ]
 }
 
@@ -71,7 +106,8 @@ resource "google_container_cluster" "primary" {
 }
 
   depends_on = [
-    google_project_service.containerservice
+    google_project_service.containerservice,
+    google_project_service.gkehubservice
   ]
 }
 
@@ -132,12 +168,19 @@ resource "google_gke_hub_membership" "membership" {
       resource_link = "//container.googleapis.com/${google_container_cluster.primary.id}"
     }
   }
+  depends_on = [
+    google_project_service.gkehubservice
+  ]
   provider = google-beta
 }
 
 resource "google_gke_hub_feature" "acm_feature" {
   name = "configmanagement"
   location = "global"
+  depends_on = [
+    google_project_service.gkehubservice,
+    google_project_service.acmservice
+  ]
   provider = google-beta
 }
 
@@ -149,10 +192,15 @@ resource "google_gke_hub_feature_membership" "acm_feature_member" {
     version = "1.6.2"
     config_sync {
       git {
-        sync_repo = "https://github.com/AlexBulankou/gcp-declarative-multi-team"
-        sync_branch = "alexb-test-20210720"
+        sync_repo = var.sync_repo
+        sync_branch = var.sync_branch
+        policy_dir = var.policy_dir
+        secret_type = "none"
       }
     }
   }
+  depends_on = [
+    google_project_service.gkehubservice
+  ]
   provider = google-beta
 }

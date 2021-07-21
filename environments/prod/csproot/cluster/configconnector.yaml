@@ -7,4 +7,4 @@ metadata:
   name: configconnector.core.cnrm.cloud.google.com
 spec:
  mode: cluster
- googleServiceAccount: "cnrmsa@PROJECT_ID.iam.gserviceaccount.com"
+ googleServiceAccount: "cnrmsa@alexbu-test-20210720-prod.iam.gserviceaccount.com"
