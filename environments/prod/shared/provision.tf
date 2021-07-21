@@ -125,18 +125,34 @@ resource "google_service_account_iam_binding" "admin-account-iam" {
   ]
 }
 
+resource "google_gke_hub_membership" "membership" {
+  membership_id = "hub-membership"
+  endpoint {
+    gke_cluster {
+      resource_link = "//container.googleapis.com/${google_container_cluster.primary.id}"
+    }
+  }
+  provider = google-beta
+}
 
-module "config_sync" {
-  source           = "terraform-google-modules/kubernetes-engine/google//modules/config-sync"
+resource "google_gke_hub_feature" "acm_feature" {
+  name = "configmanagement"
+  location = "global"
+  provider = google-beta
+}
 
-  project_id       = var.project
-  cluster_name     = google_container_cluster.primary.name
-  location         = local.zone
-  cluster_endpoint = google_container_cluster.primary.endpoint
-  secret_type      = "none"
-  sync_repo        = "https://github.com/AlexBulankou/gcp-declarative-multi-team.git"
-  sync_branch      = "main"
-  policy_dir       = "environments/prod/csproot"
-  create_ssh_key   = false
-  
+resource "google_gke_hub_feature_membership" "acm_feature_member" {
+  location = "global"
+  feature = google_gke_hub_feature.acm_feature.name
+  membership = google_gke_hub_membership.membership.membership_id
+  configmanagement {
+    version = "1.6.2"
+    config_sync {
+      git {
+        sync_repo = "https://github.com/AlexBulankou/gcp-declarative-multi-team"
+        sync_branch = "alexb-test-20210720"
+      }
+    }
+  }
+  provider = google-beta
 }
